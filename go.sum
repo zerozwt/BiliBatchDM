@@ -19,5 +19,5 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
-github.com/zerozwt/BLiveDanmaku v1.0.4 h1:3Z0i/sxrTYl5J2J2Yhfg7DPjTYylO5sPZ+0kONqESnE=
-github.com/zerozwt/BLiveDanmaku v1.0.4/go.mod h1:93haMyYup0DHv5G2TFqMB5aYI/ISpn61JZ7lNoorT9Y=
+github.com/zerozwt/BLiveDanmaku v1.0.5 h1:KIgFXQbH8oyN1WxagexcAGIGc87Cd4Mrmv2/9Warzlk=
+github.com/zerozwt/BLiveDanmaku v1.0.5/go.mod h1:/Fdagq4dLTRsmx3jZZeJt83qUSdxJbcnMwHfOYSViTk=

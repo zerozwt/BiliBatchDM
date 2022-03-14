@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/gorilla/mux v1.8.0
 	github.com/json-iterator/go v1.1.12
-	github.com/zerozwt/BLiveDanmaku v1.0.4
+	github.com/zerozwt/BLiveDanmaku v1.0.5
 )
 
 require (

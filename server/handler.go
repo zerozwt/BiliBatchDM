@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -111,4 +112,26 @@ func QueryProgress(ctx *Context) (interface{}, error) {
 		return nil, Err233
 	}
 	return task, nil
+}
+
+type PicItem struct {
+	Url string `json:"url"`
+}
+
+func PicList(ctx *Context) (interface{}, error) {
+	list := []PicItem{}
+	dir := filepath.Join(www_root, "pics")
+	err := filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
+		if info == nil {
+			return nil
+		}
+		if info.IsDir() {
+			return nil
+		}
+		if (strings.HasSuffix(path, ".jpg") || strings.HasSuffix(path, ".png")) && strings.HasPrefix(path, www_root) {
+			list = append(list, PicItem{Url: path[len(www_root):]})
+		}
+		return nil
+	})
+	return map[string]interface{}{"list": list}, err
 }

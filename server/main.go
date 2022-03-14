@@ -43,6 +43,7 @@ func main() {
 	api := server.PathPrefix("/api/").Subrouter()
 	api.Path("/batch_send").Methods("POST").HandlerFunc(API(BatchSend))
 	api.Path("/progress").Methods("GET").HandlerFunc(API(QueryProgress))
+	api.Path("/pic_list").Methods("GET").HandlerFunc(API(PicList))
 	api.PathPrefix("/").HandlerFunc(WithLog(func(ctx *Context) error {
 		ctx.WriteResponse(404, "No handlers", nil)
 		return nil

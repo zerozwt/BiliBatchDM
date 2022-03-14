@@ -19,8 +19,31 @@
             <div style="margin-top: 4px">～</div>
             <n-input-number v-model:value="max_time" :show-button="false" placeholder="最高间隔" ><template #suffix>秒</template></n-input-number>
         </n-space>
-        消息内容:
-        <n-input v-model:value="content" type="textarea" placeholder="在这里输入消息内容" :rows="5"/>
+        消息类型:
+        <n-radio-group v-model:value="msg_type" name="mt">
+            <n-radio-button key="1" value="1">文字消息</n-radio-button>
+            <n-radio-button key="2" value="2">图片消息</n-radio-button>
+        </n-radio-group>
+        <n-space vertical v-if="msg_type == '1'">
+            消息内容:
+            <n-input v-model:value="content" type="textarea" placeholder="在这里输入消息内容" :rows="5"/>
+        </n-space>
+        <n-space vertical v-else>
+            <n-space>
+                <div style="padding-top: 4px">选择图片:</div>
+                <n-button type="default" @click="getPicList">刷新图片列表</n-button>
+            </n-space>
+            <n-radio-group v-model:value="pic_url" name="pic">
+                <n-radio v-for="item in pic_list" :key="item.url" :value="item.url">
+                    <n-tooltip trigger="hover">
+                        <template #trigger>
+                            <n-image :src="item.url" preview-disabled object-fit="scale-down"/>
+                        </template>
+                        {{item.url}}
+                    </n-tooltip>
+                </n-radio>
+            </n-radio-group>
+        </n-space>
     </n-space>
 </n-card>
 <n-card title="接收者">
@@ -36,7 +59,8 @@
         <n-space vertical>
             是否将以下私信内容:
             <div class="msg-preview" id="msg-preview">
-                <div v-for="item in content_preview" :key="item.key">{{item.text}}</div>
+                <div v-if="msg_type == '1'"><div v-for="item in content_preview" :key="item.key">{{item.text}}</div></div>
+                <div v-else><img :src="pic_url" style="max-width: 100%; width: auto;"/></div>
             </div>
             发送给以下B站UID:
             <ul id="reciever_list">
@@ -53,7 +77,7 @@
 
 <script>
 import { useMessage } from "naive-ui";
-import { computed, ref, inject, watchEffect } from "vue";
+import { computed, ref, inject, watchEffect, onMounted } from "vue";
 import axios from 'axios';
 
 const loadCache = (key, def_value) => {
@@ -76,11 +100,32 @@ export default {
         let min_time = ref(parseInt(loadCache("min_time", "5"), 10));
         let max_time = ref(parseInt(loadCache("max_time", "7"), 10));
 
+        let msg_type = ref(loadCache("msg_type", "1"));
+
         let content = ref(loadCache("content", ""));
         let recv_list_txt = ref("");
 
         let preview_key = 0;
         let content_preview = computed(() => content.value.trim().split("\n").map(x => {return {text: x, key: ++preview_key};}));
+
+        let pic_list = ref([]);
+        let pic_url = ref("");
+
+        let getPicList = () => {
+            axios.get("/api/pic_list").then(
+                rsp => {
+                    if (rsp.data.code != 0) {
+                        message.error(`[${rsp.data.code}]请求失败: ${rsp.data.msg}`);
+                        return;
+                    }
+                    pic_list.value = rsp.data.data.list;
+                }
+            ).catch(
+                err => message.error(JSON.stringify(err))
+            );
+        };
+
+        onMounted(getPicList);
 
         watchEffect(() => {
             window.sessionStorage.setItem("sender_uid", sender_uid.value.toString());
@@ -89,6 +134,7 @@ export default {
             window.sessionStorage.setItem("min_time", min_time.value.toString());
             window.sessionStorage.setItem("max_time", max_time.value.toString());
             window.sessionStorage.setItem("content", content.value);
+            window.sessionStorage.setItem("msg_type", msg_type.value);
         });
 
         let getRecvList = () => {
@@ -136,8 +182,12 @@ export default {
                 message.error("发送时间间隔设置错误: 发送间隔必须大于0");
                 return;
             }
-            if (content.value.trim().length == 0) {
+            if (msg_type.value == "1" && content.value.trim().length == 0) {
                 message.error("消息内容未设置");
+                return;
+            }
+            if (msg_type.value == "2" && pic_url.value.trim().length == 0) {
+                message.error("发送图片未选择");
                 return;
             }
             let tmp = getRecvList();
@@ -158,7 +208,8 @@ export default {
                 jct: jct.value,
                 min_time: min_time.value,
                 max_time: max_time.value,
-                content: content.value,
+                msg_type: msg_type.value,
+                content: msg_type.value == "1" ? content.value : pic_url.value,
                 recv_list: getRecvList().list,
             };
             submitting.value = true;
@@ -184,6 +235,7 @@ export default {
             showModal,
             submitting,
             recievers,
+            msg_type,
             content_preview,
 
             sender_uid,
@@ -193,9 +245,12 @@ export default {
             max_time,
             content,
             recv_list_txt,
+            pic_list,
+            pic_url,
 
             submit,
             doSubmit,
+            getPicList,
         };
     },
 };
@@ -205,5 +260,9 @@ export default {
 .msg-preview {
     background-color: rgba(128, 128, 128, 0.1);
     padding: 16px;
+}
+.n-image--preview-disabled img {
+    max-width: 300px;
+    width: auto;
 }
 </style>

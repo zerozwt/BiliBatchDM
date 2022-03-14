@@ -19,6 +19,12 @@
         </n-card>
     </n-space>
 </n-card>
+<n-card title="发送图片私信" style="margin-top: 24px">
+    <p>私信群发小助手支持发送JPG和PNG格式的图片。</p>
+    <p>在“消息类型”中，选择“图片消息”。</p>
+    <p>将需要发送的图片文件复制到小助手程序目录下的 <span style="background-color: #efefef;">/dist/pics</span> 目录中。</p>
+    <p>再点击“刷新图片列表”按钮，即可出现需要的图片，然后选择图片发送即可。</p>
+</n-card>
 </template>
 
 <script>

@@ -10,8 +10,13 @@
         </div>
         <div>群发任务开始时间: {{start_time}}</div>
         消息内容:
-        <div class="msg-content" id="msg-content">
-            <div v-for="item in content_lines" :key="item.key">{{item.text}}</div>
+        <div>
+            <div v-if="msg_type == '1'" class="msg-content" id="msg-content">
+                <div v-for="item in content_lines" :key="item.key">{{item.text}}</div>
+            </div>
+            <div v-else class="msg-content" id="msg-content">
+                <img :src="content" style="max-width: 100%; width: auto;"/>
+            </div>
         </div>
         </n-space>
     </n-card>
@@ -45,6 +50,7 @@ export default {
         let start_ts = ref(0);
         let num_total = ref(0);
         let num_done = ref(0);
+        let msg_type = ref("1");
         let content = ref("");
         let result_list = ref([]);
 
@@ -82,6 +88,7 @@ export default {
                 start_ts.value = data.start_ts;
                 num_total.value = data.num_total;
                 num_done.value = data.num_done;
+                msg_type.value = data.msg_type;
                 content.value = data.content;
                 result_list.value = data.result_list;
             }).catch(err => message.error(JSON.stringify(err)));
@@ -97,6 +104,8 @@ export default {
             start_time,
             num_total,
             num_done,
+            msg_type,
+            content,
             content_lines,
             result_list,
             percentage,
